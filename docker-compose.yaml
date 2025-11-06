@@ -1,0 +1,84 @@
+
+services:
+  traefik:
+    image: traefik:v3.1.0
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    command:
+      - "--accesslog"
+      - "--log.level=DEBUG"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
+
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+
+#      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+#      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+#      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+
+      - "--entrypoints.websecure.http.tls.certresolver=leresolver"
+      - "--certificatesresolvers.leresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.leresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
+
+      - "--entrypoints.websecure.http.tls.domains[0].main=example.com"
+
+    labels:
+      - "traefik.enable=true"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+    env_file:
+      .env
+    networks:
+      - mainnet
+    restart: always
+
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`) ||  PathPrefix(`/socket.io`)"
+      - "traefik.http.routers.backend.priority=10"
+      - "traefik.http.routers.backend.service=backend"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    env_file:
+      - .env
+    networks:
+      - mainnet
+    restart: always
+    depends_on:
+      - postgres
+
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    env_file:
+      - .env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/pgdata
+    networks:
+      - mainnet
+    restart: always
+
+
+
+
+
+volumes:
+  letsencrypt:
+  postgres_data:
+
+networks:
+  mainnet:

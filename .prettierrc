@@ -1,0 +1,7 @@
+{
+  "plugins": [],
+  "semi": false,
+  "organizeImportsSkipDestructiveCodeActions": true,
+  "printWidth": 120,
+  "bracketSameLine": false
+}
