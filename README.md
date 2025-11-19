@@ -58,7 +58,13 @@ TON_API_KEY="<api-key>"
 docker-compose pull # Pull images, call once 
 docker-compose build # Build gateway, rebuild after make changes in src folder
 docker-compose up # Start project, add -d option to start in daemon mode
+
+# You can build gateway locally, push image to registry and pull image on the server
+docker image build -t shuriken0x/0x-pay-ton:latest  -f Dockerfile ./ # replace "shuriken0x/0x-pay-ton" to your image name
+docker image push shuriken0x/0x-pay-ton:latest
+# Remove "build" and add "image" for backend service in docker-compose.yaml.
 ```
+
 
 If you need TLS you must uncomment the traefik command options than concern TLS configuration in docker-compose.yaml.
 Do not forget replace "example.com" with your domain. A record of YOUR domain must contain YOUR server ip.
