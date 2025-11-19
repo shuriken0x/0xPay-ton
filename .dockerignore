@@ -2,6 +2,9 @@
 /dist
 /node_modules
 /build
+**/*.md
+Dockerfile
+*docker-compose.yaml
 
 .env*
 

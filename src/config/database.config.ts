@@ -10,8 +10,6 @@ import { ProcessedTransaction } from "../gateway/ton/processed-transaction.entit
 import { Webhook } from "../gateway/webhook/webhook.entity"
 import { Initial1762394606234 } from "../db/migrations/1762394606234-initial"
 
-
-
 const schema = z.object({
   host: z.string(),
   port: z.coerce.number().int(),
@@ -46,14 +44,8 @@ export default function () {
   const sharedOptions = {
     schema: "public",
     logging: logLevels,
-    entities: [
-      Payment,
-      ProcessedTransaction,
-      Webhook
-    ] as MixedList<Function>,
-    migrations: [
-      Initial1762394606234
-    ] as MixedList<Function>,
+    entities: [Payment, ProcessedTransaction, Webhook] as MixedList<Function>,
+    migrations: [Initial1762394606234] as MixedList<Function>,
     migrationsTableName: "migrations",
     installExtensions: true,
     extra: 16,

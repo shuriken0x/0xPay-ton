@@ -7,6 +7,7 @@ export class AppMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const expectedSecret = ZeroPayConfig.apiSecret
     const providedSecret = req.header("x-access-token")
+
     if (providedSecret === expectedSecret) {
       next()
       return

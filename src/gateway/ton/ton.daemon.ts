@@ -2,15 +2,16 @@ import { Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common"
 import { Address, TonClient, Transaction } from "@ton/ton"
 import { InjectRepository } from "@nestjs/typeorm"
 import { In, Repository } from "typeorm"
-import { catchError, concatMap, EMPTY, from, interval, Subscription, tap } from "rxjs"
+import { catchError, concatMap, EMPTY, from, Subscription, tap, timer } from "rxjs"
 import ms from "ms"
 import { serializeError } from "serialize-error-cjs"
 import z from "zod"
 import { omit } from "lodash"
-import { Token } from "../token.enum"
+import { Token } from "../consts/token"
 import { ProcessedTransaction } from "./processed-transaction.entity"
 import { PaymentService } from "../payment/payment.service"
 import { TONTransactionIterator } from "./ton-transaction.iterator"
+import { ZeroPayConfig } from "../../config"
 
 export abstract class TONDaemon implements OnModuleInit, OnModuleDestroy {
   protected abstract logger: Logger
@@ -18,18 +19,17 @@ export abstract class TONDaemon implements OnModuleInit, OnModuleDestroy {
   protected abstract address: Address
 
   protected intervalPeriod = ms("30s")
-
   protected provider: TonClient
   private subscription: Subscription
   protected limit: number = 100
 
   protected constructor(
     @InjectRepository(ProcessedTransaction) protected repository: Repository<ProcessedTransaction>,
-    protected service: PaymentService
+    protected service: PaymentService,
   ) {
     this.provider = new TonClient({
-      endpoint: "https://toncenter.com/api/v2/jsonRPC",
-      apiKey: "cc187e363ec5dd1467ab563c4f4ce0fa55b35b95a7ed30b3b0d14ad510e1d58f",
+      endpoint: ZeroPayConfig.ton.apiEndpoint,
+      apiKey: ZeroPayConfig.ton.apiKey,
     })
   }
 
@@ -106,7 +106,7 @@ export abstract class TONDaemon implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleInit() {
-    this.subscription = interval(this.intervalPeriod)
+    this.subscription = timer(ms("5s"), this.intervalPeriod)
       .pipe(
         concatMap(() => {
           return from(this.process()).pipe(
@@ -121,9 +121,9 @@ export abstract class TONDaemon implements OnModuleInit, OnModuleDestroy {
                 error: omit(serializeError(e), ["stack"]),
               })
               return EMPTY
-            })
+            }),
           )
-        })
+        }),
       )
       .subscribe({
         error: (e) => this.logger.error(e),

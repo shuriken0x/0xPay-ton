@@ -1,4 +1,4 @@
-import { Test, TestingModule } from "@nestjs/testing"
+import { Test } from "@nestjs/testing"
 import { PaymentService } from "../payment.service"
 import { TestingService } from "../../../testing/testing.service"
 import { AppModule } from "../../../app.module"
@@ -29,14 +29,17 @@ describe("PaymentController", () => {
   })
 
   it("POST /payment/create 200", async () => {
-    const resp = await axios.post("payment/create", {
-      payload: "123",
-    },
+    const resp = await axios.post(
+      "payment/create",
+      {
+        payload: "123",
+      },
       {
         headers: {
-            "X-Access-Token": process.env.API_SECRET
-        }
-      })
+          "X-Access-Token": process.env.API_SECRET,
+        },
+      },
+    )
     expect(resp.status).toBe(201)
     const payment = resp.data as Payment
     expect(payment.id).toBeDefined()

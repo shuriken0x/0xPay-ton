@@ -14,7 +14,10 @@ import { Blockchain, createShardAccount, type SandboxContract } from "@ton/sandb
 
 @Injectable()
 export class JettonService {
-  protected constructor(protected masterAddress: Address, protected contract: SandboxContract<JettonContract>) {}
+  protected constructor(
+    protected jettonMaster: Address,
+    protected contract: SandboxContract<JettonContract>,
+  ) {}
 
   public static async initialize(jettonContractCode: string, jettonContractData: string, jettonMasterAddress: string) {
     const blockchain = await Blockchain.create()
@@ -30,13 +33,13 @@ export class JettonService {
         data: contractData,
         balance: toNano("1"),
         workchain: 0,
-      })
+      }),
     )
     return new JettonService(masterAddress, openedContract)
   }
 
   public getJettonMaster() {
-    return this.masterAddress
+    return this.jettonMaster
   }
 
   public async getJettonWallet(holder: string) {
@@ -64,7 +67,7 @@ class JettonContract implements Contract {
     provider: ContractProvider,
     via: Sender,
     args: { value: bigint; bounce?: boolean | null | undefined },
-    body: Cell
+    body: Cell,
   ) {
     await provider.internal(via, { ...args, body: body })
   }

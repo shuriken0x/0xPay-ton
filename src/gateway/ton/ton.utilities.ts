@@ -1,4 +1,7 @@
 import { Address } from "@ton/core"
+import { Token } from "../consts/token"
+import { Jetton } from "./jetton/jetton"
+import { z } from "zod"
 
 export class TONUtilities {
   public static isValidAddress(address: unknown) {
@@ -20,5 +23,12 @@ export class TONUtilities {
     }
 
     return a.toString({ bounceable: false, urlSafe: true, testOnly: false })
+  }
+
+  public static isJetton(token: Token): token is Jetton {
+    if (z.enum(Token).safeParse(token).success) {
+      return token !== Token.TON
+    }
+    return false
   }
 }

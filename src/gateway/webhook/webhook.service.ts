@@ -2,9 +2,9 @@ import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/commo
 import { InjectRepository } from "@nestjs/typeorm"
 import { Webhook } from "./webhook.entity"
 import { EntityManager, Repository } from "typeorm"
-import { Agent, Agent as HttpsAgent } from "https"
+import { Agent as HttpsAgent } from "https"
 import { Agent as HttpAgent } from "http"
-import axios, { AxiosInstance } from "axios"
+import axios from "axios"
 import { ZeroPayConfig } from "../../config"
 import ms from "ms"
 import { catchError, concatMap, EMPTY, from, interval, Subscription } from "rxjs"
@@ -52,12 +52,12 @@ export class WebhookService implements OnModuleInit, OnModuleDestroy {
   async retrieve(id: string) {
     return this.repository.findOneOrFail({
       where: {
-        id
-      }
+        id,
+      },
     })
   }
 
-   async process() {
+  async process() {
     const webhooks = await this.repository.find({
       where: {
         sent: false,

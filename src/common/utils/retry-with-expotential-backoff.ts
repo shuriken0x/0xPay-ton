@@ -1,12 +1,11 @@
 import retry from "retry"
 import ms from "ms"
 
-
 export function retryWithExponentialBackoff<F extends (...args: any[]) => Promise<any>>(
   func: F,
   retryIf: (e: unknown) => boolean,
   onRetry?: (attempt: number) => void | Promise<void>,
-  options: Partial<retry.OperationOptions> = {}
+  options: Partial<retry.OperationOptions> = {},
 ) {
   return new Promise<Awaited<ReturnType<F>>>((resolve, reject) => {
     const operation = retry.operation({
@@ -18,7 +17,7 @@ export function retryWithExponentialBackoff<F extends (...args: any[]) => Promis
       forever: false,
       maxRetryTime: ms("5m"),
       unref: false,
-      ...options
+      ...options,
     })
 
     operation.attempt(async (attempt) => {
@@ -39,4 +38,3 @@ export function retryWithExponentialBackoff<F extends (...args: any[]) => Promis
     })
   })
 }
-

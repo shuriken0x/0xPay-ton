@@ -8,7 +8,11 @@ export class TONTransactionIterator {
 
   protected _canNext: boolean = true
 
-  constructor(protected provider: TonClient, protected address: Address, protected limit: number) {
+  constructor(
+    protected provider: TonClient,
+    protected address: Address,
+    protected limit: number,
+  ) {
     this.stack = []
     this.cursor = undefined
   }
@@ -23,7 +27,6 @@ export class TONTransactionIterator {
       archival: true,
       ...this.cursor,
     })
-
 
     this.stack.push(this.cursor)
 

@@ -1,15 +1,12 @@
 import axios from "axios"
 import { Body, Controller, INestApplication, NestMiddleware, Post } from "@nestjs/common"
-import { PaymentService } from "../../payment/payment.service"
 import { TestingService } from "../../../testing/testing.service"
 import { Test } from "@nestjs/testing"
 import { AppModule } from "../../../app.module"
-import { Payment } from "../../payment/payment.entity"
 import { WebhookService } from "../webhook.service"
 import { getDataSourceToken, getRepositoryToken } from "@nestjs/typeorm"
 import { Webhook } from "../webhook.entity"
 import { Repository } from "typeorm"
-import { AppMiddleware } from "../../../app.middleware"
 import { NextFunction, Request, Response } from "express"
 
 jest.mock("../../../app.middleware", () => {

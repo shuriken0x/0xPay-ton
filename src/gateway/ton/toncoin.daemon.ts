@@ -1,21 +1,20 @@
 import { Address, Transaction } from "@ton/ton"
-import { Injectable, Logger } from "@nestjs/common"
-import { InjectRepository } from "@nestjs/typeorm"
+import { Injectable, Logger, Provider } from "@nestjs/common"
+import { getRepositoryToken, InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { TONDaemon } from "./ton.daemon"
 import { ProcessedTransaction } from "./processed-transaction.entity"
 import { PaymentService } from "../payment/payment.service"
 import { TONUtilities } from "./ton.utilities"
-import { Token } from "../token.enum"
-import { ZeroPayConfig } from "../../config"
+import { Token } from "../consts/token"
 
 @Injectable()
 export class ToncoinDaemon extends TONDaemon {
   protected logger = new Logger(ToncoinDaemon.name)
-  protected address = Address.parse(ZeroPayConfig.ton.address)
   protected token = Token.TON
 
   constructor(
+    protected address: Address,
     @InjectRepository(ProcessedTransaction) protected repository: Repository<ProcessedTransaction>,
     protected service: PaymentService,
   ) {
@@ -52,7 +51,7 @@ export class ToncoinDaemon extends TONDaemon {
             message: "Transaction with unexpected opcode detected",
             txid,
           })
-          await this.markAsProcessed(txid, "Unexpected opcode")
+          await this.markAsProcessed(txid, "unexpected opcode")
           continue
         }
 
@@ -85,5 +84,15 @@ export class ToncoinDaemon extends TONDaemon {
         await this.markAsProcessed(txid, "not interested transaction")
       }
     }
+  }
+}
+
+export function getToncoinDaemonProvider(holder: string): Provider {
+  return {
+    provide: ToncoinDaemon,
+    inject: [getRepositoryToken(ProcessedTransaction), PaymentService],
+    useFactory: async (repository: Repository<ProcessedTransaction>, service: PaymentService) => {
+      return new ToncoinDaemon(Address.parse(holder), repository, service)
+    },
   }
 }

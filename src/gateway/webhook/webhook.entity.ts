@@ -1,4 +1,3 @@
-import { Injectable } from "@nestjs/common"
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity()
@@ -7,7 +6,7 @@ export class Webhook {
   id: string
 
   @Column("varchar", {
-    length: 255
+    length: 255,
   })
   event: string
 

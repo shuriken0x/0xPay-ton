@@ -13,7 +13,7 @@ export class ProcessedTransaction {
   txid: string | null
 
   @Column("text", {
-    nullable: true
+    nullable: true,
   })
   note: string | null
 

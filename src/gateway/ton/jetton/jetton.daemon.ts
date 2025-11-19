@@ -1,27 +1,25 @@
-import { Logger, Provider } from "@nestjs/common"
-import { JettonService } from "./jetton.service"
-
+import { Injectable, Logger, Provider } from "@nestjs/common"
 import { getRepositoryToken, InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
-import { getJettonServiceToken } from "./get-jetton-service-token"
 import { getJettonDaemonToken } from "./get-jetton-daemon-token"
 import { PaymentService } from "../../payment/payment.service"
 import { ProcessedTransaction } from "../processed-transaction.entity"
 import { Address, Transaction } from "@ton/ton"
-import { Token } from "../../token.enum"
 import { TONDaemon } from "../ton.daemon"
 import { TONUtilities } from "../ton.utilities"
-import { ZeroPayConfig } from "../../../config"
+import { JettonServiceLocator } from "./jetton-service.locator"
+import { type Jetton } from "./jetton"
 
+@Injectable()
 export class JettonDaemon extends TONDaemon {
   protected logger: Logger
-  protected token = Token.USDT
 
   constructor(
+    protected token: Jetton,
     protected address: Address,
+    protected jettonMaster: Address,
     @InjectRepository(ProcessedTransaction) protected repository: Repository<ProcessedTransaction>,
     protected service: PaymentService,
-    protected jettonService: JettonService
   ) {
     super(repository, service)
     this.logger = new Logger(`${JettonDaemon.name}-${this.token}`)
@@ -45,7 +43,7 @@ export class JettonDaemon extends TONDaemon {
             message: "Transaction with unexpected opcode detected",
             txid,
           })
-          await this.markAsProcessed(txid, "Unexpected opcode")
+          await this.markAsProcessed(txid, "unexpected opcode")
           continue
         }
 
@@ -65,10 +63,7 @@ export class JettonDaemon extends TONDaemon {
         const owner = stack.readAddress()
         const jettonMaster = stack.readAddress()
 
-        if (
-          TONUtilities.standardizeAddress(jettonMaster) !==
-          TONUtilities.standardizeAddress(this.jettonService.getJettonMaster())
-        ) {
+        if (TONUtilities.standardizeAddress(jettonMaster) !== TONUtilities.standardizeAddress(this.jettonMaster)) {
           this.logger.warn({
             message: "Wrong jetton master",
             txid,
@@ -129,27 +124,22 @@ export class JettonDaemon extends TONDaemon {
       }
     }
   }
-
-  public static async initialize(
-    repository: Repository<ProcessedTransaction>,
-    service: PaymentService,
-    jettonService: JettonService
-  ) {
-    const jettonWallet = await jettonService.getJettonWallet(ZeroPayConfig.ton.address)
-    return new JettonDaemon(jettonWallet, repository, service, jettonService)
-  }
 }
 
-export const getJettonDaemonProvider = (token: Token): Provider => {
+export const getJettonDaemonProvider = (holder: string, token: Jetton): Provider => {
   return {
     provide: getJettonDaemonToken(token),
-    inject: [getRepositoryToken(ProcessedTransaction), getJettonServiceToken(token), PaymentService],
+    inject: [getRepositoryToken(ProcessedTransaction), PaymentService, JettonServiceLocator],
     useFactory: async (
       repository: Repository<ProcessedTransaction>,
-      jettonService: JettonService,
       service: PaymentService,
+      jettonServiceLocator: JettonServiceLocator,
     ) => {
-      return await JettonDaemon.initialize(repository, service, jettonService)
+      const jettonService = jettonServiceLocator.get(token)
+      const jettonMaster = jettonService.getJettonMaster()
+      const jettonWallet = await jettonService.getJettonWallet(holder)
+
+      return new JettonDaemon(token, jettonWallet, jettonMaster, repository, service)
     },
   }
 }

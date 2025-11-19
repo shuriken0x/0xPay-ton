@@ -1,9 +1,8 @@
-import { HttpException, HttpStatus, INestApplication, Injectable } from "@nestjs/common"
+import { INestApplication, Injectable } from "@nestjs/common"
 import { color, colorize } from "json-colorizer"
 import { isEmpty } from "lodash"
 import { format, transports } from "winston"
-import { Request, Response, NextFunction } from "express"
-import { ZeroPayConfig } from "./config"
+import { ValidationPipe } from './common/validation';
 
 @Injectable()
 export class AppService {
@@ -15,7 +14,7 @@ export class AppService {
     // @ts-ignore
     app.set("query parser", "extended")
 
-
+    app.useGlobalPipes(new ValidationPipe())
     app.enableShutdownHooks()
   }
 

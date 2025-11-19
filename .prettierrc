@@ -3,5 +3,6 @@
   "semi": false,
   "organizeImportsSkipDestructiveCodeActions": true,
   "printWidth": 120,
-  "bracketSameLine": false
+  "bracketSameLine": false,
+  "singleQuote": false
 }
