@@ -5,7 +5,7 @@ Memo is used to identify payments and to minimize commission costs.
 
 ## API
 
-Provide X-Access-Token for every API request.
+Provide X-Access-Token for every API request. \
 Swagger available on http://locahost/api/swagger. Do not remember set SWAGGER_ENABLED="true" in .env.
 
 ## Webhook
@@ -52,6 +52,8 @@ WEBHOOK_URL="<your-server-webhook-url>" # Webhook notifications will be sent to 
 TON_ADDRESS_FOR_ACCEPT_PAYMENTS="<address>"
 TON_API_ENDPOINT="https://toncenter.com/api/v2/jsonRPC"
 TON_API_KEY="<api-key>"
+
+SWAGGER_ENABLED="true"
 ```
 
 ```shell
