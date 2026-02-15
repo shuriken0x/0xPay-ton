@@ -5,4 +5,4 @@ const schema = z.object({
   payload: z.string().or(z.null()),
 })
 
-export class CreatePaymentDto extends createZodDto(schema) {}
+export class CreateChargeDto extends createZodDto(schema) {}

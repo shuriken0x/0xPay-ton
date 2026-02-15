@@ -1,30 +1,30 @@
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
-import { PaymentService } from "./payment.service"
-import { RetrievePaymentDto } from "./dto/retrieve-payment.dto"
-import { CreatePaymentDto } from "./dto/create-payment.dto"
-import { PaymentListDto } from "./dto/payment-list.dto"
+import { ChargeService } from "./charge.service"
+import { RetrieveChargeDto } from "./dto/retrieve-charge.dto"
+import { CreateChargeDto } from "./dto/create-charge.dto"
+import { ChargeListDto } from "./dto/charge-list.dto"
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from "@nestjs/swagger"
-import { Payment } from "./payment.entity"
+import { Charge } from "./charge.entity"
 import { ZeroPayConfig } from "../../config"
 
-@ApiExtraModels(Payment)
+@ApiExtraModels(Charge)
 @Controller("payment")
-export class PaymentController {
-  constructor(protected service: PaymentService) {}
+export class ChargeController {
+  constructor(protected service: ChargeService) {}
 
   @ApiOkResponse({
-    schema: { $ref: getSchemaPath(Payment) },
+    schema: { $ref: getSchemaPath(Charge) },
   })
   @Post("create")
-  async create(@Body() dto: CreatePaymentDto) {
+  async create(@Body() dto: CreateChargeDto) {
     return await this.service.create(dto)
   }
 
   @ApiOkResponse({
-    schema: { $ref: getSchemaPath(Payment) },
+    schema: { $ref: getSchemaPath(Charge) },
   })
   @Get("retrieve")
-  async retrieve(@Query() { id }: RetrievePaymentDto) {
+  async retrieve(@Query() { id }: RetrieveChargeDto) {
     return await this.service.retrieve(id)
   }
 
@@ -32,7 +32,7 @@ export class PaymentController {
     schema: {
       type: "object",
       properties: {
-        items: { type: "array", items: { $ref: getSchemaPath(Payment) } },
+        items: { type: "array", items: { $ref: getSchemaPath(Charge) } },
         meta: {
           type: "object",
           properties: {
@@ -47,7 +47,7 @@ export class PaymentController {
     },
   })
   @Get("list")
-  async list(@Query() dto: PaymentListDto) {
+  async list(@Query() dto: ChargeListDto) {
     return await this.service.list(dto)
   }
 

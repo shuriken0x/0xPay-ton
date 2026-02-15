@@ -5,10 +5,11 @@ import { MixedList } from "typeorm/common/MixedList"
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions"
 import { z } from "zod"
 import { ConfigService } from "./config.service"
-import { Payment } from "../gateway/payment/payment.entity"
+import { Charge } from "../gateway/charge/charge.entity"
 import { ProcessedTransaction } from "../gateway/ton/processed-transaction.entity"
 import { Webhook } from "../gateway/webhook/webhook.entity"
-import { Initial1762394606234 } from "../db/migrations/1762394606234-initial"
+import { ChargeTransaction } from "../gateway/charge/charge-transaction.entity"
+import { Initial1771139259564 } from "../db/migrations/1771139259564-initial"
 
 const schema = z.object({
   host: z.string(),
@@ -44,8 +45,8 @@ export default function () {
   const sharedOptions = {
     schema: "public",
     logging: logLevels,
-    entities: [Payment, ProcessedTransaction, Webhook] as MixedList<Function>,
-    migrations: [Initial1762394606234] as MixedList<Function>,
+    entities: [Charge, ChargeTransaction, ProcessedTransaction, Webhook] as MixedList<Function>,
+    migrations: [Initial1771139259564] as MixedList<Function>,
     migrationsTableName: "migrations",
     installExtensions: true,
     extra: 16,

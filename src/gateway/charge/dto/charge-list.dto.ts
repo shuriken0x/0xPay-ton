@@ -7,8 +7,6 @@ const schema = z.object({
   filter: z
     .object({
       id: z.coerce.number().int().positive().transform(String).optional(),
-      txid: z.coerce.string().min(1).optional(),
-      paid: z.union([z.stringbool(), z.boolean()]).optional(),
       memo: z.coerce.number().int().positive().transform(String).optional(),
       payload: z.string().or(z.null()).optional(),
     })
@@ -20,4 +18,4 @@ const schema = z.object({
     .default({}),
 })
 
-export class PaymentListDto extends createZodDto(schema) {}
+export class ChargeListDto extends createZodDto(schema) {}

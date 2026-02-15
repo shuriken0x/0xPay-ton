@@ -5,4 +5,4 @@ const schema = z.object({
   id: z.coerce.number().int().positive().transform(String),
 })
 
-export class RetrievePaymentDto extends createZodDto(schema) {}
+export class RetrieveChargeDto extends createZodDto(schema) {}

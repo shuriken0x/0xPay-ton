@@ -1,11 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing"
 import { AppModule } from "../../../app.module"
-import { PaymentService } from "../payment.service"
+import { ChargeService } from "../charge.service"
 import { TestingService } from "../../../testing/testing.service"
 
 describe("PaymentService", () => {
   let module: TestingModule
-  let service: PaymentService
+  let service: ChargeService
 
   beforeEach(async () => {
     await TestingService.dropDataSources()
@@ -13,7 +13,7 @@ describe("PaymentService", () => {
       imports: [AppModule],
     }).compile()
 
-    service = module.get(PaymentService)
+    service = module.get(ChargeService)
   })
 
   afterAll(async () => {

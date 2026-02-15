@@ -2,14 +2,14 @@ import { Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common"
 import { Address, TonClient, Transaction } from "@ton/ton"
 import { InjectRepository } from "@nestjs/typeorm"
 import { In, Repository } from "typeorm"
-import { catchError, concatMap, EMPTY, from, Subscription, tap, timer } from "rxjs"
+import { catchError, concatMap, EMPTY, from, Subscription, timer } from "rxjs"
 import ms from "ms"
 import { serializeError } from "serialize-error-cjs"
 import z from "zod"
 import { omit } from "lodash"
 import { Token } from "../consts/token"
 import { ProcessedTransaction } from "./processed-transaction.entity"
-import { PaymentService } from "../payment/payment.service"
+import { ChargeService } from "../charge/charge.service"
 import { TONTransactionIterator } from "./ton-transaction.iterator"
 import { ZeroPayConfig } from "../../config"
 
@@ -25,7 +25,7 @@ export abstract class TONDaemon implements OnModuleInit, OnModuleDestroy {
 
   protected constructor(
     @InjectRepository(ProcessedTransaction) protected repository: Repository<ProcessedTransaction>,
-    protected service: PaymentService,
+    protected service: ChargeService,
   ) {
     this.provider = new TonClient({
       endpoint: ZeroPayConfig.ton.apiEndpoint,
@@ -106,15 +106,15 @@ export abstract class TONDaemon implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleInit() {
-    this.subscription = timer(ms("5s"), this.intervalPeriod)
+    this.subscription = timer(ms("15s"), this.intervalPeriod)
       .pipe(
         concatMap(() => {
           return from(this.process()).pipe(
-            tap(() => {
-              this.logger.log({
-                message: "Transactions retrieved and successfully processed",
-              })
-            }),
+            // tap(() => {
+            //   this.logger.log({
+            //     message: "Transactions retrieved and successfully processed",
+            //   })
+            // }),
             catchError((e) => {
               this.logger.warn({
                 message: "An error occurred while attempting to receive and process transactions",

@@ -4,7 +4,7 @@ import { getRepositoryToken, InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { TONDaemon } from "./ton.daemon"
 import { ProcessedTransaction } from "./processed-transaction.entity"
-import { PaymentService } from "../payment/payment.service"
+import { ChargeService } from "../charge/charge.service"
 import { TONUtilities } from "./ton.utilities"
 import { Token } from "../consts/token"
 
@@ -16,7 +16,7 @@ export class ToncoinDaemon extends TONDaemon {
   constructor(
     protected address: Address,
     @InjectRepository(ProcessedTransaction) protected repository: Repository<ProcessedTransaction>,
-    protected service: PaymentService,
+    protected service: ChargeService,
   ) {
     super(repository, service)
   }
@@ -90,8 +90,8 @@ export class ToncoinDaemon extends TONDaemon {
 export function getToncoinDaemonProvider(holder: string): Provider {
   return {
     provide: ToncoinDaemon,
-    inject: [getRepositoryToken(ProcessedTransaction), PaymentService],
-    useFactory: async (repository: Repository<ProcessedTransaction>, service: PaymentService) => {
+    inject: [getRepositoryToken(ProcessedTransaction), ChargeService],
+    useFactory: async (repository: Repository<ProcessedTransaction>, service: ChargeService) => {
       return new ToncoinDaemon(Address.parse(holder), repository, service)
     },
   }

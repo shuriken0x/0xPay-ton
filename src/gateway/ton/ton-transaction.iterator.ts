@@ -63,9 +63,6 @@ export class TONTransactionIterator {
       archival: true,
       ...this.cursor,
     })
-
-    // this.stack.splice(this.stack.length - 1, 1)
-
     return transactions
   }
 }

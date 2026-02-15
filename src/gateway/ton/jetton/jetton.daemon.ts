@@ -2,7 +2,7 @@ import { Injectable, Logger, Provider } from "@nestjs/common"
 import { getRepositoryToken, InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { getJettonDaemonToken } from "./get-jetton-daemon-token"
-import { PaymentService } from "../../payment/payment.service"
+import { ChargeService } from "../../charge/charge.service"
 import { ProcessedTransaction } from "../processed-transaction.entity"
 import { Address, Transaction } from "@ton/ton"
 import { TONDaemon } from "../ton.daemon"
@@ -19,7 +19,7 @@ export class JettonDaemon extends TONDaemon {
     protected address: Address,
     protected jettonMaster: Address,
     @InjectRepository(ProcessedTransaction) protected repository: Repository<ProcessedTransaction>,
-    protected service: PaymentService,
+    protected service: ChargeService,
   ) {
     super(repository, service)
     this.logger = new Logger(`${JettonDaemon.name}-${this.token}`)
@@ -129,10 +129,10 @@ export class JettonDaemon extends TONDaemon {
 export const getJettonDaemonProvider = (holder: string, token: Jetton): Provider => {
   return {
     provide: getJettonDaemonToken(token),
-    inject: [getRepositoryToken(ProcessedTransaction), PaymentService, JettonServiceLocator],
+    inject: [getRepositoryToken(ProcessedTransaction), ChargeService, JettonServiceLocator],
     useFactory: async (
       repository: Repository<ProcessedTransaction>,
-      service: PaymentService,
+      service: ChargeService,
       jettonServiceLocator: JettonServiceLocator,
     ) => {
       const jettonService = jettonServiceLocator.get(token)

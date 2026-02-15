@@ -1,20 +1,20 @@
 import { Module } from "@nestjs/common"
 import { TypeOrmModule } from "@nestjs/typeorm"
-import { Payment } from "./payment/payment.entity"
+import { Charge } from "./charge/charge.entity"
 import { ProcessedTransaction } from "./ton/processed-transaction.entity"
-import { PaymentService } from "./payment/payment.service"
+import { ChargeService } from "./charge/charge.service"
 import { Token } from "./consts/token"
 import { getToncoinDaemonProvider } from "./ton/toncoin.daemon"
 import { getJettonDaemonProvider } from "./ton/jetton/jetton.daemon"
 import { Webhook } from "./webhook/webhook.entity"
 import { WebhookService } from "./webhook/webhook.service"
-import { PaymentController } from "./payment/payment.controller"
+import { ChargeController } from "./charge/charge.controller"
 import { JettonController } from "./ton/jetton/jetton.controller"
 import { ZeroPayConfig } from "../config"
 import { JettonServiceLocatorProvider } from "./ton/jetton/jetton-service.locator"
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Payment, ProcessedTransaction, Webhook])],
+  imports: [TypeOrmModule.forFeature([Charge, ProcessedTransaction, Webhook])],
   providers: [
     JettonServiceLocatorProvider,
     ...ZeroPayConfig.ton.enabled.map((token) => {
@@ -24,10 +24,10 @@ import { JettonServiceLocatorProvider } from "./ton/jetton/jetton-service.locato
         return getJettonDaemonProvider(ZeroPayConfig.ton.address, token)
       }
     }),
-    PaymentService,
+    ChargeService,
     WebhookService,
   ],
-  controllers: [PaymentController, JettonController],
+  controllers: [ChargeController, JettonController],
   exports: [],
 })
 export class GatewayModule {}

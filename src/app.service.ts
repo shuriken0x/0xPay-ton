@@ -2,7 +2,7 @@ import { INestApplication, Injectable } from "@nestjs/common"
 import { color, colorize } from "json-colorizer"
 import { isEmpty } from "lodash"
 import { format, transports } from "winston"
-import { ValidationPipe } from './common/validation';
+import { ValidationPipe } from "./common/validation"
 
 @Injectable()
 export class AppService {

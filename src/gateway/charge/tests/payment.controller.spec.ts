@@ -1,10 +1,10 @@
 import { Test } from "@nestjs/testing"
-import { PaymentService } from "../payment.service"
+import { ChargeService } from "../charge.service"
 import { TestingService } from "../../../testing/testing.service"
 import { AppModule } from "../../../app.module"
 import axios from "axios"
 import { INestApplication } from "@nestjs/common"
-import { Payment } from "../payment.entity"
+import { Charge } from "../charge.entity"
 
 const url = `http://localhost:8000/api`
 axios.defaults.baseURL = url
@@ -12,7 +12,7 @@ axios.defaults.validateStatus = (status) => status <= 500
 axios.defaults.withCredentials = true
 describe("PaymentController", () => {
   let app: INestApplication
-  let service: PaymentService
+  let service: ChargeService
 
   beforeEach(async () => {
     await TestingService.dropDataSources()
@@ -21,7 +21,7 @@ describe("PaymentController", () => {
     }).compile()
     app = await TestingService.getApp(module)
 
-    service = module.get(PaymentService)
+    service = module.get(ChargeService)
   })
 
   afterAll(async () => {
@@ -41,7 +41,7 @@ describe("PaymentController", () => {
       },
     )
     expect(resp.status).toBe(201)
-    const payment = resp.data as Payment
+    const payment = resp.data as Charge
     expect(payment.id).toBeDefined()
     expect(payment.payload).toBeDefined()
   })

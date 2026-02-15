@@ -5,6 +5,7 @@ import { WinstonModule } from "nest-winston"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import { cleanupOpenApiDoc } from "nestjs-zod"
 import { z } from "zod"
+import { ChargeService } from "./gateway/charge/charge.service"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -38,6 +39,23 @@ async function bootstrap() {
     })
   }
 
+  await app.get(ChargeService).create({
+    payload: "123",
+  })
+
+  await app.get(ChargeService).create({
+    payload: "122",
+  })
+
+  await app.get(ChargeService).create({
+    payload: "121",
+  })
+
   await app.listen(8000, "0.0.0.0")
 }
 void bootstrap()
+
+// @ts-ignore
+BigInt.prototype.toJSON = function () {
+  return this.toString()
+}

@@ -24,7 +24,7 @@ If the header signature is equal to the calculated signature, then the webhook m
   "data": {// payment data
 	"id": "1", // payment id 
 	"txid": "1f0ad53d845255...", // transaction hash
-	"amount": "1000000000", // amount in minimal units
+	"amount": "100.5", // formatted amount
 	"token": "USDT", // TON, USDT
 	"memo": "111", // Memo (unique)
 	"payload": "123" // Your payload (can be null)
