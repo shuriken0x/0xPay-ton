@@ -8,7 +8,7 @@ import { Charge } from "./charge.entity"
 import { ZeroPayConfig } from "../../config"
 
 @ApiExtraModels(Charge)
-@Controller("payment")
+@Controller("charge")
 export class ChargeController {
   constructor(protected service: ChargeService) {}
 
